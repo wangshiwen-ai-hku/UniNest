@@ -16,13 +16,15 @@ import {
   Users2,
   Building2,
   Train,
-  ShieldCheck
+  ShieldCheck,
+  QrCode
 } from 'lucide-react';
 
 interface SubmissionFormProps {
   lang: Language;
   onSuccess?: (marker?: CommunityMarker) => void;
   onClose?: () => void;
+  onOpenShare?: (communityName: string, university: string) => void;
   initialCommunityName?: string;
 }
 
@@ -50,6 +52,7 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
   lang,
   onSuccess,
   onClose,
+  onOpenShare,
   initialCommunityName,
 }) => {
   const t = translations[lang];
@@ -206,15 +209,30 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
           <p className="text-xs text-[#6E727A] max-w-xs leading-relaxed">
             {t.submitSuccessDesc}
           </p>
-          {onClose && (
-            <button
-              onClick={onClose}
-              style={{ backgroundColor: currentTheme.primaryColor, borderColor: currentTheme.primaryColor }}
-              className="zen-button-primary text-xs px-6 py-2.5 mt-2"
-            >
-              {t.returnToMapView}
-            </button>
-          )}
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full mt-2">
+            {onOpenShare && (
+              <button
+                type="button"
+                onClick={() => onOpenShare(communityName, university)}
+                style={{ backgroundColor: currentTheme.primaryColor, borderColor: currentTheme.primaryColor }}
+                className="zen-button-primary flex-1 w-full py-3 text-xs flex items-center justify-center gap-2 shadow-sm font-semibold text-white"
+              >
+                <QrCode className="w-4 h-4" />
+                <span>生成我的专属点亮海报 / 分享社群</span>
+              </button>
+            )}
+
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full sm:w-auto px-5 py-3 text-xs rounded-xl border border-[#E8E8E4] bg-[#FAF9F7] hover:bg-white text-[#6E727A] font-medium transition-colors"
+              >
+                {t.returnToMapView}
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         /* Form Content with Generous Breathing Room */

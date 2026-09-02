@@ -57,6 +57,8 @@ export default function HomePage() {
 
   const [isMonitorAllowed, setIsMonitorAllowed] = useState(false);
   const [formInitialCommunity, setFormInitialCommunity] = useState<string>('');
+  const [highlightCommunity, setHighlightCommunity] = useState<string>('');
+  const [highlightUni, setHighlightUni] = useState<string>('HKU');
 
   // Load live community data
   const loadData = async () => {
@@ -415,13 +417,25 @@ export default function HomePage() {
           <SubmissionForm
             lang={lang}
             initialCommunityName={formInitialCommunity}
+            onOpenShare={(comm, uni) => {
+              setHighlightCommunity(comm);
+              setHighlightUni(uni);
+              setIsFormModalOpen(false);
+              setIsShareOpen(true);
+            }}
             onSuccess={(newMarker) => {
               loadData();
               if (newMarker) {
                 setSelectedCommunity(newMarker);
-                setCurrentView('map');
-                if (typeof window !== 'undefined') window.location.hash = 'map';
+                setHighlightCommunity(newMarker.name);
+                const topUni = Object.keys(newMarker.universityDistribution || {})[0] || 'HKU';
+                setHighlightUni(topUni);
               }
+              // Immediately open the Share Poster when submission completes!
+              setIsFormModalOpen(false);
+              setIsShareOpen(true);
+              setCurrentView('map');
+              if (typeof window !== 'undefined') window.location.hash = 'map';
             }}
             onClose={() => {
               setIsFormModalOpen(false);
@@ -447,10 +461,15 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <ShareModal
         isOpen={isShareOpen}
-        onClose={() => setIsShareOpen(false)}
+        onClose={() => {
+          setIsShareOpen(false);
+          setHighlightCommunity('');
+        }}
         lang={lang}
         totalStudents={totalStudents}
         registeredCommunitiesCount={registeredCommunitiesCount}
+        highlightCommunity={highlightCommunity}
+        highlightUni={highlightUni}
       />
 
     </main>
