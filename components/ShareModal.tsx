@@ -259,10 +259,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/50 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="zen-card w-full max-w-md bg-white rounded-3xl border border-[#E8E8E4] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200">
+      <div className="zen-card w-full max-w-md bg-white rounded-3xl border border-[#E8E8E4] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         
-        {/* Top Controls: Title, Language Switcher & Close Button */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#F0F0EC] bg-[#FAFAF8]">
+        {/* Sticky Top Controls: Title, Language Switcher & Close Button */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#F0F0EC] bg-[#FAFAF8] shrink-0">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#21573B]" />
             <span className="text-xs font-semibold text-[#1C1E21] tracking-tight">
@@ -279,7 +279,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   onClick={() => setActiveLang(l)}
                   className={`px-2 py-0.5 rounded-md font-medium transition-all ${
                     activeLang === l
-                      ? 'bg-[#21573B] text-white'
+                      ? 'bg-[#21573B] text-white shadow-2xs'
                       : 'text-[#6E727A] hover:text-[#1C1E21]'
                   }`}
                 >
@@ -298,10 +298,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         </div>
 
         {/* Scrollable Visual Poster Area */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex flex-col items-center">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-col items-center">
           
           {/* Poster Paper Card with Master Collage Artwork */}
-          <div className="relative w-full rounded-2xl overflow-hidden shadow-lg border border-[#DCE2DC] bg-[#FAF9F6]">
+          <div className="relative w-full rounded-2xl overflow-hidden shadow-md border border-[#DCE2DC] bg-[#FAF9F6]">
             
             {/* Background Master Graphic Poster Artwork */}
             <img
@@ -311,10 +311,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             />
 
             {/* Gradient Overlay for Text Clarity */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/85 to-white/35" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/85 to-white/40" />
 
-            {/* Poster Content Layer */}
-            <div className="relative p-5 sm:p-6 flex flex-col items-center text-center gap-3.5">
+            {/* Poster Content Layer with Generous Bottom Padding */}
+            <div className="relative px-4 pt-5 pb-8 sm:px-6 sm:pt-6 sm:pb-9 flex flex-col items-center text-center gap-3">
               
               {/* Header Slogans */}
               <div className="flex flex-col items-center gap-1">
@@ -329,22 +329,22 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 </p>
 
                 {highlightCommunity && (
-                  <div className="mt-1 px-3 py-1 rounded-full bg-[#21573B]/10 border border-[#21573B]/25 text-[#21573B] text-xs font-bold">
+                  <div className="mt-0.5 px-3 py-1 rounded-full bg-[#21573B]/10 border border-[#21573B]/25 text-[#21573B] text-xs font-bold">
                     {pt.litUpTitle(highlightCommunity)}
                   </div>
                 )}
               </div>
 
               {/* Scannable High-Contrast QR Code Card */}
-              <div className="relative p-3.5 bg-white/95 backdrop-blur-md rounded-2xl border border-[#D0DDD4] shadow-md flex flex-col items-center gap-2">
-                <div className="relative w-44 h-44 sm:w-48 sm:h-48 rounded-xl overflow-hidden bg-white flex items-center justify-center p-1.5">
+              <div className="relative p-3 bg-white/95 backdrop-blur-md rounded-2xl border border-[#D0DDD4] shadow-md flex flex-col items-center gap-2">
+                <div className="relative w-40 h-40 sm:w-44 sm:h-44 rounded-xl overflow-hidden bg-white flex items-center justify-center p-1">
                   <img
                     src={qrApiUrl}
                     alt="Scan to open UniNest"
                     className="w-full h-full object-contain"
                   />
                   {/* Center Brand Logo */}
-                  <div className="absolute inset-0 m-auto w-9 h-9 rounded-xl bg-[#21573B] text-white flex items-center justify-center shadow-md border-2 border-white">
+                  <div className="absolute inset-0 m-auto w-8 h-8 rounded-lg bg-[#21573B] text-white flex items-center justify-center shadow-md border-2 border-white">
                     <span className="text-xs font-bold tracking-tight">港</span>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               </div>
 
               {/* Live Alumni Count Capsule */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#D0DDD4] text-xs text-[#2D3A34] shadow-xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#D0DDD4] text-xs text-[#2D3A34] shadow-xs mt-0.5">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#21573B] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#21573B]"></span>
@@ -371,60 +371,60 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 </span>
               </div>
 
-              {/* Footer Alliance Line */}
-              <p className="text-[10px] text-[#6E727A] tracking-tight">
+              {/* Footer Alliance Line (With ample bottom clearance) */}
+              <p className="text-[10px] sm:text-[11px] text-[#4F5652] tracking-tight font-medium mt-1">
                 {pt.uniAlliance} · {pt.appUrlDisplay}
               </p>
 
             </div>
           </div>
 
-          {/* Action Buttons: 1-Click Download Poster & Copy Link */}
-          <div className="w-full flex flex-col gap-2.5 mt-4">
+        </div>
+
+        {/* Sticky Action Footer: 1-Click Download Poster & Copy Link */}
+        <div className="p-4 sm:px-5 sm:py-3.5 border-t border-[#F0F0EC] bg-white shrink-0 flex flex-col gap-2 shadow-xs">
+          <button
+            onClick={handleDownloadPoster}
+            disabled={isGenerating}
+            className="zen-button-primary w-full py-3 text-xs flex items-center justify-center gap-2 shadow-sm font-semibold tracking-wide"
+          >
+            {isGenerating ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>{pt.downloading}</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>{pt.downloadButton}</span>
+              </>
+            )}
+          </button>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              readOnly
+              value={targetUrl}
+              className="flex-1 px-3 py-1.5 text-xs bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl text-[#6E727A] outline-none select-all"
+            />
             <button
-              onClick={handleDownloadPoster}
-              disabled={isGenerating}
-              className="zen-button-primary w-full py-3.5 text-xs flex items-center justify-center gap-2 shadow-sm font-semibold tracking-wide"
+              onClick={handleCopyLink}
+              className="px-3.5 py-1.5 rounded-xl border border-[#21573B] text-[#21573B] hover:bg-[#F2F7F4] text-xs font-medium flex items-center gap-1.5 transition-colors shadow-2xs"
             >
-              {isGenerating ? (
+              {copied ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>{pt.downloading}</span>
+                  <Check className="w-3.5 h-3.5 text-[#21573B]" />
+                  <span>{pt.copied}</span>
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
-                  <span>{pt.downloadButton}</span>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{pt.copyLink}</span>
                 </>
               )}
             </button>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                readOnly
-                value={targetUrl}
-                className="flex-1 px-3 py-2 text-xs bg-[#F7F7F5] border border-[#E8E8E4] rounded-xl text-[#6E727A] outline-none select-all"
-              />
-              <button
-                onClick={handleCopyLink}
-                className="px-3.5 py-2 rounded-xl border border-[#21573B] text-[#21573B] hover:bg-[#F2F7F4] text-xs font-medium flex items-center gap-1.5 transition-colors shadow-2xs"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-[#21573B]" />
-                    <span>{pt.copied}</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>{pt.copyLink}</span>
-                  </>
-                )}
-              </button>
-            </div>
           </div>
-
         </div>
 
       </div>
