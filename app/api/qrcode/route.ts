@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const text = searchParams.get('text') || 'https://uni-nest-dun.vercel.app';
+  const text = searchParams.get('text') || 'https://uninest.aurahk.me';
   const size = searchParams.get('size') || '360x360';
   const color = searchParams.get('color') || '14-56-37';
 

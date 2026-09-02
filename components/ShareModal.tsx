@@ -30,7 +30,7 @@ const POSTER_TEXTS = {
     liveStat: (students: number, comms: number) => `实时已入驻 ${students} 位港校校友 · 覆盖 ${comms} 个小区`,
     litUpTitle: (comm: string) => `✨ 已点亮 ${comm}`,
     uniAlliance: '香港八大公立高校深港互助联盟',
-    appUrlDisplay: 'uni-nest-dun.vercel.app',
+    appUrlDisplay: 'uninest.aurahk.me',
   },
   'zh-TW': {
     modalTitle: '專屬點亮海報 · 分享校友社群',
@@ -46,7 +46,7 @@ const POSTER_TEXTS = {
     liveStat: (students: number, comms: number) => `即時已入駐 ${students} 位港校校友 · 覆蓋 ${comms} 個屋苑`,
     litUpTitle: (comm: string) => `✨ 已點亮 ${comm}`,
     uniAlliance: '香港八大公立高校深港互助聯盟',
-    appUrlDisplay: 'uni-nest-dun.vercel.app',
+    appUrlDisplay: 'uninest.aurahk.me',
   },
   'en': {
     modalTitle: 'Share Poster · Invite Alumni',
@@ -62,7 +62,7 @@ const POSTER_TEXTS = {
     liveStat: (students: number, comms: number) => `${students} Verified Alumni · ${comms} Lit-up Communities`,
     litUpTitle: (comm: string) => `✨ Lighted Up ${comm}`,
     uniAlliance: 'HK Top Universities Cross-Border Alliance',
-    appUrlDisplay: 'uni-nest-dun.vercel.app',
+    appUrlDisplay: 'uninest.aurahk.me',
   },
 };
 
@@ -85,10 +85,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     setActiveLang(initialLang);
   }, [initialLang]);
 
-  // Target public URL (guaranteed valid for uni-nest-dun.vercel.app)
+  // Target public URL (guaranteed valid for custom domain uninest.aurahk.me)
   const targetUrl = typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost')
     ? window.location.origin
-    : 'https://uni-nest-dun.vercel.app';
+    : 'https://uninest.aurahk.me';
 
   // Crisp high-resolution server-side proxied QR code URL
   const qrApiUrl = `/api/qrcode?text=${encodeURIComponent(targetUrl)}&size=360x360&color=14-56-37`;
