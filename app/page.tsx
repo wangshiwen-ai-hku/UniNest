@@ -298,43 +298,43 @@ export default function HomePage() {
           {/* Main Map Canvas Area */}
           <div className="flex-1 h-full w-full relative">
             
-            {/* Top Navigation Bar */}
-            <div className="absolute top-4 left-4 right-4 z-30 flex items-center justify-between pointer-events-none">
-              <div className="flex items-center gap-2 pointer-events-auto">
+            {/* Top Navigation Bar (Sleek, Responsive, No Overlap) */}
+            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 z-30 flex items-center justify-between pointer-events-none gap-1.5 sm:gap-2">
+              <div className="flex items-center gap-1.5 pointer-events-auto shrink-0">
                 <button
                   onClick={handleBackToLanding}
-                  className="px-3 py-1.5 rounded-lg bg-white/95 backdrop-blur-md border border-[#E8E8E4] text-xs font-medium text-[#1C1E21] hover:bg-white shadow-sm transition-all flex items-center gap-1.5"
+                  className="h-8 px-2.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#E8E8E4] text-xs font-medium text-[#1C1E21] hover:bg-white shadow-xs transition-all flex items-center gap-1 shrink-0"
+                  title={t.backToHome}
                 >
                   <span>←</span>
-                  <span>{t.backToHome}</span>
+                  <span className="hidden sm:inline">{t.backToHome}</span>
                 </button>
 
                 {/* Mobile drawer toggle */}
                 <button
                   onClick={() => setIsMobileSidebarOpen(true)}
-                  className="md:hidden px-3 py-1.5 rounded-lg bg-white/95 backdrop-blur-md border border-[#E8E8E4] text-xs font-medium text-[#1C1E21] hover:bg-white shadow-sm transition-all flex items-center gap-1.5"
+                  className="md:hidden h-8 px-2.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#E8E8E4] text-xs font-medium text-[#1C1E21] hover:bg-white shadow-xs transition-all flex items-center gap-1 shrink-0"
                 >
                   <Menu className="w-3.5 h-3.5" />
-                  <span>{t.communityRanking}</span>
+                  <span>{lang === 'en' ? 'Rank' : '榜单'}</span>
                 </button>
               </div>
 
-              {/* Top right actions */}
-              <div className="flex items-center gap-2 pointer-events-auto">
+              {/* Top right actions (Single-row flex-nowrap) */}
+              <div className="flex items-center gap-1.5 pointer-events-auto shrink-0">
                 {isMonitorAllowed && (
                   <button
                     onClick={() => setIsAnalyticsOpen(true)}
-                    className="px-2.5 py-1 rounded-md border border-[#2D3A34] bg-[#2D3A34] text-[#F7F7F5] text-xs flex items-center gap-1 transition-colors"
+                    className="h-8 px-2 rounded-xl border border-[#2D3A34] bg-[#2D3A34] text-[#F7F7F5] text-[11px] flex items-center gap-1 transition-colors shrink-0"
                     title="站长后台埋点监控"
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
-                    <span>后台</span>
                   </button>
                 )}
 
                 <button
                   onClick={() => setIsShareOpen(true)}
-                  className="px-2.5 py-1.5 rounded-lg bg-white/95 backdrop-blur-md border border-[#E8E8E4] text-[#4A4E57] hover:bg-white text-xs flex items-center gap-1.5 shadow-2xs transition-all"
+                  className="h-8 px-2 sm:px-2.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#E8E8E4] text-[#4A4E57] hover:bg-white text-xs flex items-center gap-1 shadow-xs transition-all shrink-0"
                   title="分享海报与二维码"
                 >
                   <QrCode className="w-3.5 h-3.5 text-[#21573B]" />
@@ -345,27 +345,29 @@ export default function HomePage() {
 
                 <button
                   onClick={() => handleOpenForm()}
-                  className="zen-button-primary px-3.5 py-1.5 text-xs flex items-center gap-1.5 shadow-sm"
+                  className="zen-button-primary h-8 px-2.5 sm:px-3.5 text-xs flex items-center gap-1 shadow-xs shrink-0 whitespace-nowrap"
                 >
                   <span>+</span>
-                  <span>{t.moduleRegisterHousing}</span>
+                  <span>{lang === 'en' ? 'Register' : '登记租房'}</span>
                 </button>
               </div>
             </div>
 
-            {/* Prominent Floating Live Alumni Counter Capsule on Map */}
-            <div className="absolute top-16 sm:top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
-              <div className="px-4 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#DCE2DC] shadow-md flex items-center gap-2.5 transition-all hover:shadow-lg">
-                <span className="relative flex h-2.5 w-2.5">
+            {/* Prominent Floating Live Alumni Counter Capsule (Bottom-left on Mobile, Top-center on Desktop) */}
+            <div className="absolute bottom-7 left-4 sm:bottom-auto sm:top-4 sm:left-1/2 sm:-translate-x-1/2 z-20 pointer-events-auto">
+              <div className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#DCE2DC] shadow-md flex items-center gap-2 transition-all hover:shadow-lg">
+                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#21573B] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#21573B]"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#21573B]"></span>
                 </span>
-                <div className="flex items-center gap-1.5 text-xs">
-                  <span className="text-[#656A66] font-medium">{lang === 'en' ? 'Live Verified Alumni:' : '实时已入驻校友:'}</span>
-                  <span className="text-[#1C1E21] font-bold text-sm">{totalStudents}</span>
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs">
+                  <span className="text-[#656A66] font-medium hidden sm:inline">{lang === 'en' ? 'Live Alumni:' : '实时已入驻校友:'}</span>
+                  <span className="text-[#1C1E21] font-bold text-xs sm:text-sm">{totalStudents}</span>
+                  <span className="text-[#656A66] font-medium sm:hidden">{lang === 'en' ? 'Alumni' : '位校友'}</span>
                   <span className="text-[#CBD0CA] mx-0.5">·</span>
-                  <span className="text-[#656A66] font-medium">{lang === 'en' ? 'Lit-up Communities:' : '已点亮小区:'}</span>
-                  <span className="text-[#21573B] font-bold text-sm">{registeredCommunitiesCount}</span>
+                  <span className="text-[#656A66] font-medium hidden sm:inline">{lang === 'en' ? 'Communities:' : '已点亮小区:'}</span>
+                  <span className="text-[#21573B] font-bold text-xs sm:text-sm">{registeredCommunitiesCount}</span>
+                  <span className="text-[#656A66] font-medium sm:hidden">{lang === 'en' ? 'Comms' : '个小区'}</span>
                 </div>
               </div>
             </div>
