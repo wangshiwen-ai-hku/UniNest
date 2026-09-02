@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #F7F7F5;
+    --bg-card: #FFFFFF;
+    --border-subtle: #E8E8E4;
+    --border-divider: #EEEEEC;
+    --text-primary: #1C1E21;
+    --text-secondary: #656972;
+    --text-muted: #9A9DA4;
+    --accent-zen: #304138;
+    --accent-zen-light: #EBF0ED;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+/* Ji Hotel / Zen Minimalist Components */
+.zen-card {
+  background: #FFFFFF;
+  border: 1px solid #E8E8E4;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -4px rgba(28, 30, 33, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zen-card:hover {
+  border-color: #D6D6D0;
+  box-shadow: 0 6px 20px -4px rgba(28, 30, 33, 0.06);
+}
+
+.zen-button-primary {
+  background-color: #2D3A34;
+  color: #F7F7F5;
+  border: 1px solid #2D3A34;
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.zen-button-primary:hover {
+  background-color: #1F2824;
+  border-color: #1F2824;
+}
+
+.zen-button-secondary {
+  background-color: #FFFFFF;
+  color: #1C1E21;
+  border: 1px solid #E4E4E0;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.zen-button-secondary:hover {
+  background-color: #F7F7F5;
+  border-color: #D2D2CC;
+}
+
+.zen-input {
+  background-color: #FFFFFF;
+  border: 1px solid #E4E4E0;
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  color: #1C1E21;
+  font-size: 0.925rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zen-input:focus {
+  border-color: #304138;
+  box-shadow: 0 0 0 1px #304138;
+}
+
+/* Subtle hairline dividers */
+.hairline-border {
+  border-color: #E8E8E4;
+}
+
+/* Custom Zen Range Slider */
+input[type="range"].zen-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #E8E8E4;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"].zen-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2D3A34;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease;
+}
+
+input[type="range"].zen-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* High-clarity subtle scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D8D2;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B4B4AD;
+}
