@@ -17,8 +17,13 @@ import {
   Building2,
   Train,
   ShieldCheck,
-  QrCode
+  QrCode,
+  Camera,
+  Image as ImageIcon,
+  Trash2,
+  Plus
 } from 'lucide-react';
+import { compressImage } from '@/lib/imageUtils';
 
 interface SubmissionFormProps {
   lang: Language;
@@ -72,6 +77,45 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isUpdateNotice, setIsUpdateNotice] = useState(false);
 
+  // Optional photos state (up to 3 photos with tags)
+  const [photos, setPhotos] = useState<Array<{ url: string; tag: string }>>([]);
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    if (photos.length >= 3) {
+      alert(t.formPhotoLimitReached);
+      return;
+    }
+    
+    setIsCompressing(true);
+    try {
+      const files = Array.from(e.target.files).slice(0, 3 - photos.length);
+      const compressedList = await Promise.all(
+        files.map(async (file) => {
+          const compressed = await compressImage(file);
+          return { url: compressed, tag: t.formPhotoTagInterior };
+        })
+      );
+      setPhotos((prev) => [...prev, ...compressedList]);
+    } catch (err) {
+      console.warn('Image compression error:', err);
+    } finally {
+      setIsCompressing(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleChangePhotoTag = (index: number, newTag: string) => {
+    setPhotos((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, tag: newTag } : item))
+    );
+  };
+
   // Active theme based on university selection
   const currentTheme: UniversityTheme = useMemo(() => {
     return UNIVERSITY_THEMES[university] || UNIVERSITY_THEMES.HKU;
@@ -122,6 +166,7 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
         commuteMinutes: nearestPort.includes('福田') ? 15 : nearestPort.includes('深圳湾') ? 25 : 20,
         nearestPort,
         review: review.trim(),
+        photos: photos.map((p) => p.url),
         lng: geo.lng,
         lat: geo.lat,
       });
@@ -479,6 +524,87 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
               placeholder={t.step7ReviewPlaceholder}
               className="zen-input text-xs py-2.5"
             />
+          </div>
+
+          {/* 8. Optional Authentic Photos Upload (Anti-Trap Real Verification) */}
+          <div className="flex flex-col gap-2 p-3.5 bg-[#FAF9F7] rounded-xl border border-[#E8E8E4]">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-semibold text-[#4A4E57] tracking-wider uppercase flex items-center gap-1.5">
+                <Camera className="w-3.5 h-3.5 text-[#21573B]" />
+                <span>{t.formPhotoUploadTitle}</span>
+              </label>
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#EBF3EE] text-[#21573B]">
+                {t.formPhotoUploadOptional}
+              </span>
+            </div>
+            
+            <p className="text-[11px] text-[#7A7E85] leading-relaxed">
+              {t.formPhotoUploadHint}
+            </p>
+
+            {/* Photos Preview Grid */}
+            <div className="grid grid-cols-3 gap-2.5 pt-1">
+              {photos.map((item, idx) => (
+                <div key={idx} className="relative group rounded-lg overflow-hidden border border-[#DCE2DC] bg-white aspect-square flex flex-col shadow-2xs">
+                  {/* Image */}
+                  <div className="relative w-full h-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.url}
+                      alt={`Photo ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePhoto(idx)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors shadow-xs"
+                      title={t.formPhotoDelete}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  {/* Tag Switcher */}
+                  <div className="p-1 bg-white/95 border-t border-[#E8E8E4] flex items-center justify-between">
+                    <select
+                      value={item.tag}
+                      onChange={(e) => handleChangePhotoTag(idx, e.target.value)}
+                      className="w-full text-[9px] text-[#4A4E57] bg-transparent border-none outline-none font-medium truncate"
+                    >
+                      <option value={t.formPhotoTagInterior}>{t.formPhotoTagInterior}</option>
+                      <option value={t.formPhotoTagExterior}>{t.formPhotoTagExterior}</option>
+                      <option value={t.formPhotoTagStreet}>{t.formPhotoTagStreet}</option>
+                      <option value={t.formPhotoTagProof}>{t.formPhotoTagProof}</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+
+              {/* Add Button (if < 3) */}
+              {photos.length < 3 && (
+                <label className={`aspect-square rounded-lg border-2 border-dashed border-[#D0D4CF] hover:border-[#2D3A34] bg-white/60 hover:bg-white flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
+                  isCompressing ? 'opacity-60 pointer-events-none' : ''
+                }`}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    disabled={isCompressing}
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                  {isCompressing ? (
+                    <div className="w-4 h-4 border-2 border-[#2D3A34] border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 text-[#6E727A]" />
+                      <span className="text-[10px] text-[#6E727A] font-medium">{t.formPhotoAddButton}</span>
+                      <span className="text-[8px] text-[#9A9EA6]">({photos.length}/3)</span>
+                    </>
+                  )}
+                </label>
+              )}
+            </div>
           </div>
 
           {/* Submit Button (Styled with University Accent Color) */}

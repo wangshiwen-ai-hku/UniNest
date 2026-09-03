@@ -20,7 +20,9 @@ import {
   Clock,
   ArrowRight,
   ShieldCheck,
-  Footprints
+  Footprints,
+  Camera,
+  ZoomIn
 } from 'lucide-react';
 
 interface MapProps {
@@ -43,6 +45,7 @@ export const MapComponent: React.FC<MapProps> = ({
   const t = translations[lang];
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const [activePhoto, setActivePhoto] = useState<string | null>(null);
   const markersRef = useRef<any[]>([]);
   const portMarkersRef = useRef<any[]>([]);
   const areaOverlaysRef = useRef<any[]>([]);
@@ -599,9 +602,79 @@ export const MapComponent: React.FC<MapProps> = ({
                   )}
                 </div>
               </div>
+
+              {/* Verified Peer Photos Gallery */}
+              <div className="flex flex-col gap-2 pt-1 border-t border-[#F0F0EC]">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#1C1E21] flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-[#21573B]" />
+                    <span>{t.communityPhotosTitle}</span>
+                  </span>
+                  {selectedCommunity.photos && selectedCommunity.photos.length > 0 && (
+                    <span className="text-[10px] text-[#21573B] font-medium bg-[#EBF3EE] px-2 py-0.5 rounded-full">
+                      {selectedCommunity.photos.length} 张实拍
+                    </span>
+                  )}
+                </div>
+
+                {selectedCommunity.photos && selectedCommunity.photos.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {selectedCommunity.photos.map((photoUrl, pIdx) => (
+                      <div
+                        key={pIdx}
+                        onClick={() => setActivePhoto(photoUrl)}
+                        className="group relative aspect-square rounded-lg overflow-hidden border border-[#E8E8E4] bg-[#F5F5F2] cursor-pointer shadow-2xs hover:border-[#21573B] transition-all"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={photoUrl}
+                          alt={`Community Photo ${pIdx + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        />
+                        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
+                          <ZoomIn className="w-4 h-4 drop-shadow" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-3 bg-[#FAF9F7] rounded-xl text-[11px] text-[#8E929A] text-center border border-dashed border-[#E4E4DF] flex flex-col items-center gap-1.5">
+                    <span>{t.noPhotosYet}</span>
+                    {onOpenForm && (
+                      <button
+                        onClick={() => onOpenForm(selectedCommunity.name)}
+                        className="text-[11px] text-[#21573B] font-medium hover:underline flex items-center gap-1"
+                      >
+                        <Camera className="w-3 h-3" />
+                        <span>去上传实拍帮学弟妹避坑</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </>
           )}
 
+        </div>
+      )}
+
+      {/* Lightbox for Photo Fullscreen Preview */}
+      {activePhoto && (
+        <div
+          onClick={() => setActivePhoto(null)}
+          className="fixed inset-0 z-60 bg-black/85 backdrop-blur-xs flex flex-col items-center justify-center p-4 cursor-zoom-out"
+        >
+          <div className="relative max-w-md w-full flex flex-col items-center animate-in zoom-in-95 duration-150">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={activePhoto}
+              alt="Community Detail Photo"
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-white/20 shadow-2xl"
+            />
+            <div className="mt-3 px-4 py-1.5 rounded-full bg-black/60 text-white text-xs backdrop-blur-sm">
+              校友真实随手拍 · 点击任意处关闭
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -28,6 +28,7 @@ export interface SubmissionPayload {
   commuteMinutes?: number;
   nearestPort?: string;
   review?: string;
+  photos?: string[];
   lat?: number;
   lng?: number;
 }
@@ -332,6 +333,9 @@ export async function submitHousingRecord(payload: SubmissionPayload): Promise<{
     if (payload.review) {
       target.reviews = [payload.review, ...target.reviews.filter((r) => r !== payload.review)].slice(0, 3);
     }
+    if (payload.photos && payload.photos.length > 0) {
+      target.photos = [...(payload.photos || []), ...(target.photos || [])].slice(0, 6);
+    }
     runtimeCommunities[existingIndex] = target;
     resultingMarker = target;
   } else {
@@ -358,6 +362,7 @@ export async function submitHousingRecord(payload: SubmissionPayload): Promise<{
       },
       tags: ['新点亮小区', '校友推荐'],
       reviews: payload.review ? [payload.review] : [],
+      photos: payload.photos || [],
     };
     runtimeCommunities.unshift(newMarker);
     resultingMarker = newMarker;

@@ -10,6 +10,7 @@ import { SubmissionForm } from '@/components/SubmissionForm';
 import { AnalyticsModal } from '@/components/AnalyticsModal';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ShareModal } from '@/components/ShareModal';
+import { OnboardingModal } from '@/components/OnboardingModal';
 import {
   MapPin,
   Map as MapIcon,
@@ -23,7 +24,8 @@ import {
   Menu,
   X,
   Compass,
-  QrCode
+  QrCode,
+  HelpCircle
 } from 'lucide-react';
 
 const MapComponent = dynamic(
@@ -50,6 +52,7 @@ export default function HomePage() {
   const [currentView, setCurrentView] = useState<'landing' | 'map'>('landing');
 
   // Modals
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -79,6 +82,10 @@ export default function HomePage() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('monitor') === '1' || window.location.hash.includes('monitor')) {
         setIsMonitorAllowed(true);
+      }
+      const hasSeenOnboarding = localStorage.getItem('uninest_onboarding_shown');
+      if (!hasSeenOnboarding) {
+        setIsOnboardingOpen(true);
       }
     }
   }, []);
@@ -148,6 +155,16 @@ export default function HomePage() {
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsOnboardingOpen(true)}
+                className="px-2.5 py-1.5 rounded-lg border border-[#DCE2DC] bg-white hover:bg-[#F2F5F3] text-[#21573B] text-xs flex items-center gap-1.5 shadow-2xs transition-all font-medium"
+                title={t.onboardingNavButton}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#21573B]" />
+                <span className="hidden sm:inline">{t.onboardingNavButton}</span>
+                <span className="sm:hidden">{lang === 'en' ? 'Guide' : '指南'}</span>
+              </button>
+
               <button
                 onClick={() => setIsShareOpen(true)}
                 className="px-2.5 py-1.5 rounded-lg border border-[#E8E8E4] bg-white hover:bg-[#F9F9F7] text-[#4A4E57] text-xs flex items-center gap-1.5 shadow-2xs transition-all"
@@ -308,6 +325,15 @@ export default function HomePage() {
                 >
                   <span>←</span>
                   <span className="hidden sm:inline">{t.backToHome}</span>
+                </button>
+
+                <button
+                  onClick={() => setIsOnboardingOpen(true)}
+                  className="h-8 px-2.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#DCE2DC] text-xs font-medium text-[#21573B] hover:bg-white shadow-xs transition-all flex items-center gap-1 shrink-0"
+                  title={t.onboardingNavButton}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#21573B]" />
+                  <span className="hidden sm:inline">{t.onboardingNavButton}</span>
                 </button>
 
                 {/* Mobile drawer toggle */}
@@ -472,6 +498,25 @@ export default function HomePage() {
         registeredCommunitiesCount={registeredCommunitiesCount}
         highlightCommunity={highlightCommunity}
         highlightUni={highlightUni}
+      />
+
+      {/* ========================================================================= */}
+      {/* 6. ONBOARDING & VISION MODAL (Swipeable, Multimodal Proof, 3-Languages) */}
+      {/* ========================================================================= */}
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        lang={lang}
+        onClose={() => setIsOnboardingOpen(false)}
+        onExploreMap={() => {
+          setIsOnboardingOpen(false);
+          handleOpenMap();
+        }}
+        onOpenForm={() => {
+          setIsOnboardingOpen(false);
+          handleOpenForm();
+        }}
+        totalStudents={totalStudents}
+        communitiesCount={registeredCommunitiesCount}
       />
 
     </main>

@@ -19,6 +19,7 @@ export interface CommunityMarker {
   universityDistribution: Record<string, number>; // e.g. { HKU: 25, CUHK: 18, ... }
   tags: string[];
   reviews: string[];
+  photos?: string[];
   isPreset?: boolean;
   description?: string;
 }
