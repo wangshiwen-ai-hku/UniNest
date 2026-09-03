@@ -154,10 +154,12 @@ export default function HomePage() {
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
+
               <button
                 onClick={() => setIsOnboardingOpen(true)}
-                className="px-2.5 py-1.5 rounded-lg border border-[#DCE2DC] bg-white hover:bg-[#F2F5F3] text-[#21573B] text-xs flex items-center gap-1.5 shadow-2xs transition-all font-medium"
+                className="px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#DCE2DC] bg-white hover:bg-[#F2F5F3] text-[#21573B] text-xs flex items-center gap-1.5 shadow-2xs transition-all font-medium"
                 title={t.onboardingNavButton}
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#21573B]" />
@@ -167,14 +169,12 @@ export default function HomePage() {
 
               <button
                 onClick={() => setIsShareOpen(true)}
-                className="px-2.5 py-1.5 rounded-lg border border-[#E8E8E4] bg-white hover:bg-[#F9F9F7] text-[#4A4E57] text-xs flex items-center gap-1.5 shadow-2xs transition-all"
+                className="px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E8E8E4] bg-white hover:bg-[#F9F9F7] text-[#4A4E57] text-xs flex items-center gap-1.5 shadow-2xs transition-all"
                 title="分享海报与二维码"
               >
                 <QrCode className="w-3.5 h-3.5 text-[#21573B]" />
                 <span className="hidden sm:inline">海报 / 二维码</span>
               </button>
-
-              <LanguageSwitcher currentLang={lang} onLanguageChange={setLang} />
               
               {/* Secret Admin Monitor Button (Only visible if ?monitor=1) */}
               {isMonitorAllowed && (
@@ -506,6 +506,7 @@ export default function HomePage() {
       <OnboardingModal
         isOpen={isOnboardingOpen}
         lang={lang}
+        onLanguageChange={setLang}
         onClose={() => setIsOnboardingOpen(false)}
         onExploreMap={() => {
           setIsOnboardingOpen(false);

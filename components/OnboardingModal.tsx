@@ -20,12 +20,15 @@ import {
   CreditCard,
   Zap,
   Building,
-  Users
+  Users,
+  Globe
 } from 'lucide-react';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface OnboardingModalProps {
   isOpen: boolean;
   lang: Language;
+  onLanguageChange?: (lang: Language) => void;
   onClose: () => void;
   onExploreMap: () => void;
   onOpenForm: () => void;
@@ -36,6 +39,7 @@ interface OnboardingModalProps {
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   isOpen,
   lang,
+  onLanguageChange,
   onClose,
   onExploreMap,
   onOpenForm,
@@ -154,8 +158,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             </span>
           </div>
 
-          {/* Skip / Close Button */}
-          <div className="flex items-center gap-1.5">
+          {/* Language Switcher & Skip / Close Buttons */}
+          <div className="flex items-center gap-2">
+            {onLanguageChange && (
+              <LanguageSwitcher currentLang={lang} onLanguageChange={onLanguageChange} />
+            )}
+            
             <button
               onClick={() => handleFinish('close')}
               className="px-2.5 py-1 text-xs font-medium text-[#7A7E85] hover:text-[#1C1E21] hover:bg-[#F2F1ED] rounded-lg transition-colors"
