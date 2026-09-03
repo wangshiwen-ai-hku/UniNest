@@ -79,6 +79,20 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     }
   };
 
+  // Preload optimized thumbnails in background so user encounters ZERO latency when sliding
+  useEffect(() => {
+    const imagesToPreload = [
+      '/onboarding/fake_agent_chat_thumb.jpg',
+      '/onboarding/social_spam_comments_thumb.jpg',
+      '/onboarding/distorted_room_trash_thumb.jpg',
+      '/onboarding/verified_alumni_room_thumb.jpg',
+    ];
+    imagesToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
@@ -281,11 +295,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   }
                   className="group relative rounded-xl overflow-hidden border border-[#E8E8E4] bg-white cursor-pointer shadow-2xs hover:border-[#CF1322] transition-all flex flex-col"
                 >
-                  <div className="relative aspect-3/4 w-full overflow-hidden bg-black/5">
+                  <div className="relative aspect-3/4 w-full overflow-hidden bg-[#F2F2EF]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="/onboarding/fake_agent_chat.jpg"
+                      src="/onboarding/fake_agent_chat_thumb.jpg"
                       alt={t.onboardingPainChatTitle}
+                      loading="eager"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
@@ -312,11 +327,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   }
                   className="group relative rounded-xl overflow-hidden border border-[#E8E8E4] bg-white cursor-pointer shadow-2xs hover:border-[#CF1322] transition-all flex flex-col"
                 >
-                  <div className="relative aspect-3/4 w-full overflow-hidden bg-black/5">
+                  <div className="relative aspect-3/4 w-full overflow-hidden bg-[#F2F2EF]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="/onboarding/social_spam_comments.jpg"
+                      src="/onboarding/social_spam_comments_thumb.jpg"
                       alt={t.onboardingPainSpamTitle}
+                      loading="eager"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
@@ -343,11 +359,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   }
                   className="group relative rounded-xl overflow-hidden border border-[#E8E8E4] bg-white cursor-pointer shadow-2xs hover:border-[#CF1322] transition-all flex flex-col"
                 >
-                  <div className="relative aspect-3/4 w-full overflow-hidden bg-black/5">
+                  <div className="relative aspect-3/4 w-full overflow-hidden bg-[#F2F2EF]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="/onboarding/distorted_room_trash.jpg"
+                      src="/onboarding/distorted_room_trash_thumb.jpg"
                       alt={t.onboardingPainDistortTitle}
+                      loading="eager"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
@@ -398,8 +415,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 <div className="relative rounded-xl overflow-hidden aspect-16/9 bg-[#F0F2EF] border border-[#E4E8E4]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/onboarding/verified_alumni_room.jpg"
+                    src="/onboarding/verified_alumni_room_thumb.jpg"
                     alt="Authentic Alumni Room"
+                    loading="eager"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 text-white text-[10px] backdrop-blur-xs flex items-center gap-1 font-medium">
