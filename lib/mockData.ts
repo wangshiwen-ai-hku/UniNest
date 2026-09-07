@@ -22,6 +22,8 @@ export interface CommunityMarker {
   photos?: string[];
   isPreset?: boolean;
   description?: string;
+  region?: 'SZ' | 'HK';
+  latestLeaseDate?: string;
 }
 
 // 清空所有测试伪数据，完全交由扫码用户真实表单点亮

@@ -31,6 +31,8 @@ export interface SubmissionPayload {
   photos?: string[];
   lat?: number;
   lng?: number;
+  leaseStartDate?: string; // e.g. '2025-08'
+  region?: 'SZ' | 'HK';
 }
 
 export interface AnalyticsSummary {
@@ -173,6 +175,8 @@ export async function fetchCommunityMarkers(): Promise<CommunityMarker[]> {
           tags: ['真实校友登记', '极速通关'],
           reviews: item.reviews || [],
           isPreset: false,
+          region: item.region || (item.district?.includes('香港') ? 'HK' : 'SZ'),
+          latestLeaseDate: item.latest_lease_date || undefined,
         }));
       }
     } catch (err) {
@@ -205,6 +209,7 @@ export async function fetchCommunityMarkers(): Promise<CommunityMarker[]> {
       reviews: [],
       isPreset: true,
       description: p.desc,
+      region: p.region || (p.district.includes('香港') ? 'HK' : 'SZ'),
     }));
 
   return [...dbMarkers, ...presetCandidates];
@@ -255,6 +260,7 @@ export async function submitHousingRecord(payload: SubmissionPayload): Promise<{
         review: payload.review || '',
         lng: coords.lng,
         lat: coords.lat,
+        lease_start_date: payload.leaseStartDate || null,
       }, { onConflict: 'student_email' });
 
       if (dbError) {
@@ -290,6 +296,8 @@ export async function submitHousingRecord(payload: SubmissionPayload): Promise<{
           universityDistribution: dbMarker.university_distribution || { [payload.university]: 1 },
           tags: ['真实校友登记', '极速通关'],
           reviews: dbMarker.reviews || (payload.review ? [payload.review] : []),
+          region: payload.region || (payload.district?.includes('香港') ? 'HK' : 'SZ'),
+          latestLeaseDate: payload.leaseStartDate,
         };
 
         // Sync runtimeCommunities cache
@@ -330,6 +338,9 @@ export async function submitHousingRecord(payload: SubmissionPayload): Promise<{
     } else {
       target.avgRent = payload.monthlyRent;
     }
+    if (payload.leaseStartDate) {
+      target.latestLeaseDate = payload.leaseStartDate;
+    }
     if (payload.review) {
       target.reviews = [payload.review, ...target.reviews.filter((r) => r !== payload.review)].slice(0, 3);
     }
@@ -363,6 +374,8 @@ export async function submitHousingRecord(payload: SubmissionPayload): Promise<{
       tags: ['新点亮小区', '校友推荐'],
       reviews: payload.review ? [payload.review] : [],
       photos: payload.photos || [],
+      region: payload.region || (payload.district?.includes('香港') ? 'HK' : 'SZ'),
+      latestLeaseDate: payload.leaseStartDate,
     };
     runtimeCommunities.unshift(newMarker);
     resultingMarker = newMarker;

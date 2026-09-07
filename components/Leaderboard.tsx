@@ -22,7 +22,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
 
   const topList = [...communities]
     .sort((a, b) => b.totalStudents - a.totalStudents)
-    .slice(0, 5);
+    .slice(0, 10);
 
   if (topList.length === 0) return null;
 
@@ -40,6 +40,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
       <div className="flex flex-col gap-2">
         {topList.map((comm, idx) => {
           const isSelected = selectedCommunityId === comm.id;
+          const isHK = comm.region === 'HK' || comm.district?.includes('香港');
           
           return (
             <div
@@ -55,11 +56,16 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-xs font-bold text-[#8A8E96] w-4 text-center">
-                    0{idx + 1}
+                    {idx < 9 ? `0${idx + 1}` : idx + 1}
                   </span>
                   <span className="font-semibold text-xs text-[#1C1E21] truncate">
                     {comm.name}
                   </span>
+                  {isHK && (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#EBF1F7] text-[#1D3B5C] shrink-0 font-medium">
+                      香港
+                    </span>
+                  )}
                 </div>
 
                 <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-right shrink-0 ${

@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS public.student_submissions (
   review text,
   lat double precision,
   lng double precision,
-  housing_source text DEFAULT '其他'
+  housing_source text DEFAULT '其他',
+  lease_start_date text
 );
 
 -- 开启 Row Level Security (RLS)
@@ -96,6 +97,7 @@ SELECT
   MAX(monthly_rent) AS max_rent,
   MAX(nearest_port) AS nearest_port,
   ROUND(AVG(commute_minutes)) AS commute_minutes,
+  MAX(lease_start_date) AS latest_lease_date,
   -- 计算房源类型分布比例 (转换为整数百分比)
   jsonb_build_object(
     'entire', COALESCE(ROUND((SUM(CASE WHEN rental_type = 'entire' THEN 1 ELSE 0 END)::numeric / COUNT(*)) * 100), 0),

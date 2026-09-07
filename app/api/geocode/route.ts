@@ -4,6 +4,37 @@ const AMAP_KEY = process.env.NEXT_PUBLIC_AMAP_KEY || 'b1ab3580beb37c0f0434692477
 
 function getFallbackShenzhenCoords(address: string) {
   const lower = address.toLowerCase();
+
+  // 1. 金地名津（福田口岸正对面，重点纠错）
+  if (lower.includes('金地名津') || (lower.includes('金地') && lower.includes('名津'))) {
+    return { lng: 114.0664, lat: 22.5195, district: '福田区', formattedAddress: '深圳市福田区港田路金地名津' };
+  }
+
+  // 2. 置地广场 (罗湖区春风路) vs 置地逸轩 (福田区福民)
+  if (lower.includes('置地广场') || (lower.includes('置地') && (lower.includes('罗湖') || lower.includes('春风')))) {
+    return { lng: 114.1235, lat: 22.5368, district: '罗湖区', formattedAddress: '深圳市罗湖区春风路3068号置地广场' };
+  }
+  if (lower.includes('置地逸轩') || lower.includes('置地')) {
+    return { lng: 114.0612, lat: 22.5245, district: '福田区', formattedAddress: '深圳市福田区金田路3028号置地逸轩' };
+  }
+
+  // 3. 香港热点房源
+  if (lower.includes('名城') || lower.includes('festival city')) {
+    return { lng: 114.1785, lat: 22.3732, district: '香港·沙田区', formattedAddress: '香港新界沙田大围美田路1号大围名城' };
+  }
+  if (lower.includes('海滨南岸') || lower.includes('harbour place')) {
+    return { lng: 114.1882, lat: 22.3025, district: '香港·九龙城区', formattedAddress: '香港九龙红磡爱景街8号海滨南岸' };
+  }
+  if (lower.includes('学生村') || lower.includes('薄扶林')) {
+    return { lng: 114.1352, lat: 22.2828, district: '香港·中西区', formattedAddress: '香港薄扶林道93号香港大学赛马会第一学生村' };
+  }
+  if (lower.includes('蔚蓝湾畔') || lower.includes('坑口')) {
+    return { lng: 114.2642, lat: 22.3168, district: '香港·西贡区', formattedAddress: '香港新界将军澳培成路15号蔚蓝湾畔' };
+  }
+  if (lower.includes('泓都') || lower.includes('坚尼地城')) {
+    return { lng: 114.1278, lat: 22.2845, district: '香港·中西区', formattedAddress: '香港港岛坚尼地城新海旁38号泓都' };
+  }
+
   if (lower.includes('南山') || lower.includes('后海') || lower.includes('深圳湾') || lower.includes('科技园') || lower.includes('白石洲')) {
     return { lng: 113.939882, lat: 22.517521, district: '南山区', formattedAddress: address };
   }

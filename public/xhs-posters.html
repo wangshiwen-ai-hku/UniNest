@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniNest 广厦 · 小红书爆款 3:4 高清海报套图</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background-color: #0d0f12;
+      color: #f1f5f9;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .toggle-bar {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+    }
+    .toggle-btn {
+      padding: 8px 18px;
+      border-radius: 9999px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
+    }
+    .posters-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 40px;
+      width: 100%;
+      max-width: 1360px;
+    }
+    .poster-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .download-btn {
+      margin-top: 15px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s ease;
+    }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+    
+    /* 3:4 小红书黄金比例海报 (540px x 720px，导出为 1080x1440) */
+    .xhs-card {
+      width: 480px;
+      height: 640px;
+      background: #13171b;
+      border-radius: 28px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+    
+    /* 背景氛围光 */
+    .glow-top-right {
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+    }
+    .glow-bottom-left {
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+    }
+
+    /* 顶部标签行 */
+    .pill-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .pill {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pill-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .pill-cyan {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .pill-orange {
+      background: rgba(249, 115, 22, 0.15);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    /* 大标题 */
+    .title-area h2 {
+      font-size: 26px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .title-area p {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* 中间高保真 UI 模块 */
+    .ui-showcase {
+      background: rgba(25, 30, 36, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 18px;
+      margin: 14px 0;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    /* 底部品牌栏 */
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 12px;
+      font-size: 12px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .footer-brand .dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+    .footer-url {
+      color: #34d399;
+      font-family: monospace;
+      font-weight: 600;
+      font-size: 12px;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    /* 内部小组件样式 */
+    .commute-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .apt-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .apt-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: #34d399;
+    }
+    .commute-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      background: rgba(255,255,255,0.03);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border-left: 3px solid #10b981;
+    }
+    .timeline-item.subway {
+      border-left-color: #38bdf8;
+    }
+    .timeline-item.hk {
+      border-left-color: #f59e0b;
+    }
+    .tip-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px dashed rgba(245, 158, 11, 0.3);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      color: #fcd34d;
+      line-height: 1.4;
+      margin-top: 10px;
+    }
+    .grid-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>UniNest 广厦 · 小红书爆款 3:4 宣传海报套图</h1>
+    <p>去除了手机杂乱状态栏，采用 3:4 黄金分辨率，支持一键无损下载为高清 PNG</p>
+    <div class="toggle-bar">
+      <button class="toggle-btn active" id="btn-safe" onclick="setMode('safe')">🛡️ 100% 安全过审版（推荐 · 无网址）</button>
+      <button class="toggle-btn" id="btn-raw" onclick="setMode('raw')">🌐 完整域名版 (带 .me)</button>
+    </div>
+  </div>
+
+  <div class="posters-container">
+
+    <!-- 海报 1：【王牌封面】深港跨境学子 · 透明租房指南 -->
+    <div class="poster-box">
+      <div class="xhs-card" id="poster-1">
+        <div class="glow-top-right"></div>
+        <div class="glow-bottom-left"></div>
+
+        <div>
+          <div class="pill-row">
+            <span class="pill pill-emerald">⚡ 港硕深住透明地图</span>
+            <span class="pill pill-cyan">港大 / 科大 / 中大 / 理大</span>
+          </div>
+          <div class="title-area">
+            <h2>深港跨境学子<br>透明租房指南</h2>
+            <p>100% 真实校友一人一票去重 · 口岸通勤与均价全景呈现</p>
+          </div>
+        </div>
+
+        <!-- 视觉卡片区 -->
+        <div class="ui-showcase">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div style="flex: 1; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: #94a3b8;">已点亮校友</div>
+              <div style="font-size: 20px; font-weight: 800; color: #34d399; margin-top: 2px;">真实去重</div>
+            </div>
+            <div style="flex: 1; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: #94a3b8;">月租省下</div>
+              <div style="font-size: 20px; font-weight: 800; color: #38bdf8; margin-top: 2px;">50% 以上</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #cbd5e1; margin-bottom: 6px;">
+              <span>🗺️ 口岸通勤全景地图</span>
+              <span style="color: #34d399; font-weight: 600;">高德 2.0 直连</span>
+            </div>
+            <div style="font-size: 11px; color: #64748b; line-height: 1.4;">
+              深圳北站高铁18min直达西九龙 · 皇岗24h全天候通关 · 福田/罗湖双铁直通
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bar">
+          <div class="footer-brand">
+            <span class="dot"></span>
+            <span>广厦 · UniNest</span>
+          </div>
+          <div class="footer-url dynamic-footer">🔍 搜【广厦 UniNest】</div>
+        </div>
+      </div>
+      <button class="download-btn" onclick="downloadPoster('poster-1', '01_UniNest_封面指南.png')">⬇️ 下载这张高清海报 (3:4)</button>
+    </div>
+
+    <!-- 海报 2：【痛点拆解】深港通学到底多久？权威门到门测算 -->
+    <div class="poster-box">
+      <div class="xhs-card" id="poster-2">
+        <div class="glow-top-right" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(0,0,0,0) 70%);"></div>
+
+        <div>
+          <div class="pill-row">
+            <span class="pill pill-cyan">⏱️ 权威通勤实测</span>
+            <span class="pill pill-emerald">拒绝盲猜</span>
+          </div>
+          <div class="title-area">
+            <h2>深港通学到底多久？<br>门到门全流程拆解</h2>
+            <p>从小区门口到香港大学课室，每一步清清楚楚</p>
+          </div>
+        </div>
+
+        <div class="ui-showcase">
+          <div class="commute-card-header">
+            <div>
+              <div class="apt-name">铂金时代公寓</div>
+              <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">福田 / 罗湖生活圈 · HKU 校友聚集</div>
+            </div>
+            <div class="apt-price">¥4000<span style="font-size: 12px; color: #94a3b8; font-weight: 400;">/月</span></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16,185,129,0.1); padding: 6px 10px; border-radius: 8px; margin-bottom: 8px;">
+            <span style="font-size: 11px; color: #a7f3d0;">⏱️ 门到门权威测算</span>
+            <span style="font-size: 13px; font-weight: 800; color: #34d399;">~76-87 分钟</span>
+          </div>
+
+          <div class="commute-timeline">
+            <div class="timeline-item">
+              <span>① 小区 → 边境口岸（地铁直达）</span>
+              <span style="color: #94a3b8; font-weight: 600;">~20 分钟</span>
+            </div>
+            <div class="timeline-item subway">
+              <span>② 口岸联检大楼（学生 e道自助速通）</span>
+              <span style="color: #38bdf8; font-weight: 600;">8-14 分钟</span>
+            </div>
+            <div class="timeline-item hk">
+              <span>③ 边境口岸 → 香港大学课室</span>
+              <span style="color: #fbbf24; font-weight: 600;">~48 分钟</span>
+            </div>
+          </div>
+
+          <div class="tip-box">
+            💡 <strong>通学贴士：</strong>西区海底隧道城巴 970/905 或金钟站换乘港岛线至香港大学站 A 出口。
+          </div>
+        </div>
+
+        <div class="footer-bar">
+          <div class="footer-brand">
+            <span class="dot"></span>
+            <span>广厦 · UniNest</span>
+          </div>
+          <div class="footer-url dynamic-footer">🔍 搜【广厦 UniNest】</div>
+        </div>
+      </div>
+      <button class="download-btn" onclick="downloadPoster('poster-2', '02_UniNest_门到门通勤.png')">⬇️ 下载这张高清海报 (3:4)</button>
+    </div>
+
+    <!-- 海报 3：【片区全景】港硕深住口岸全景与均价分布 -->
+    <div class="poster-box">
+      <div class="xhs-card" id="poster-3">
+        <div class="glow-top-right" style="background: radial-gradient(circle, rgba(249, 115, 22, 0.2) 0%, rgba(0,0,0,0) 70%);"></div>
+
+        <div>
+          <div class="pill-row">
+            <span class="pill pill-orange">🗺️ 口岸与热区全景</span>
+            <span class="pill pill-emerald">性价比之王</span>
+          </div>
+          <div class="title-area">
+            <h2>港硕深住怎么选？<br>各大口岸通学校区指南</h2>
+            <p>房租直省一半，品质与通勤如何两全？</p>
+          </div>
+        </div>
+
+        <div class="ui-showcase">
+          <div class="grid-stats">
+            <div class="stat-item">
+              <div class="stat-label">🚄 深圳北站（高铁）</div>
+              <div class="stat-value" style="color: #38bdf8;">18 分钟</div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px;">极速直达香港西九龙</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">🌙 皇岗口岸</div>
+              <div class="stat-value" style="color: #34d399;">24h 通关</div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px;">全天候跨境直通车</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">🚇 莲花北 / 景田</div>
+              <div class="stat-value" style="color: #fb923c;">¥3600-5300</div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px;">4号线直通 · 宁静宜居</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">🏠 福田口岸 / 水围</div>
+              <div class="stat-value" style="color: #f43f5e;">校友高密聚集</div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px;">步行通关 · 生活极方便</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 10px 12px; border-radius: 12px; font-size: 11px; color: #94a3b8;">
+            📊 <strong>真实校友分布：</strong>城投青莲公寓、彩田村、置地逸轩、水榭春天、海悦华城...
+          </div>
+        </div>
+
+        <div class="footer-bar">
+          <div class="footer-brand">
+            <span class="dot"></span>
+            <span>广厦 · UniNest</span>
+          </div>
+          <div class="footer-url dynamic-footer">🔍 搜【广厦 UniNest】</div>
+        </div>
+      </div>
+      <button class="download-btn" onclick="downloadPoster('poster-3', '03_UniNest_口岸全景.png')">⬇️ 下载这张高清海报 (3:4)</button>
+    </div>
+
+    <!-- 海报 4：【防坑认证】大学邮箱 100% 一人一票去重机制 -->
+    <div class="poster-box">
+      <div class="xhs-card" id="poster-4">
+        <div class="glow-top-right"></div>
+
+        <div>
+          <div class="pill-row">
+            <span class="pill pill-emerald">🛡️ 港校专属认证</span>
+            <span class="pill pill-cyan">一人一票去重</span>
+          </div>
+          <div class="title-area">
+            <h2>拒绝虚假房源与中介！<br>100% 港校邮箱实名核验</h2>
+            <p>求进·求新·创未来 · 清水湾红鸟晨曦专属皮肤</p>
+          </div>
+        </div>
+
+        <div class="ui-showcase">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div style="width: 10px; height: 10px; background: #38bdf8; border-radius: 50%;"></div>
+            <span style="font-size: 14px; font-weight: 700; color: #fff;">香港科技大学 · HKUST</span>
+            <span style="font-size: 11px; color: #38bdf8; margin-left: auto; font-family: monospace;">@connect.ust.hk</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+            <div style="background: rgba(255,255,255,0.04); padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">1. 毕业/就读高校认证</span>
+              <span style="color: #34d399; font-weight: 600;">8所港校专属直选</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">2. 邮箱去重凭证</span>
+              <span style="color: #38bdf8; font-weight: 600;">防重复刷单 · 杜绝中介</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">3. 真实月租范围</span>
+              <span style="color: #fb923c; font-weight: 600;">¥2500 - ¥5500 合租/整租</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 10px; font-size: 11px; color: #64748b; text-align: center;">
+            🔒 严格保护隐私 · 邮箱仅用于防重去重认证，绝不对外公开
+          </div>
+        </div>
+
+        <div class="footer-bar">
+          <div class="footer-brand">
+            <span class="dot"></span>
+            <span>广厦 · UniNest</span>
+          </div>
+          <div class="footer-url dynamic-footer">🔍 搜【广厦 UniNest】</div>
+        </div>
+      </div>
+      <button class="download-btn" onclick="downloadPoster('poster-4', '04_UniNest_邮箱认证.png')">⬇️ 下载这张高清海报 (3:4)</button>
+    </div>
+
+  </div>
+
+  <script>
+    function setMode(mode) {
+      const footers = document.querySelectorAll('.dynamic-footer');
+      const btnSafe = document.getElementById('btn-safe');
+      const btnRaw = document.getElementById('btn-raw');
+
+      if (mode === 'safe') {
+        btnSafe.classList.add('active');
+        btnRaw.classList.remove('active');
+        footers.forEach(f => {
+          f.innerText = '🔍 搜【广厦 UniNest】';
+        });
+      } else {
+        btnRaw.classList.add('active');
+        btnSafe.classList.remove('active');
+        footers.forEach(f => {
+          f.innerText = 'uninest.aurahk.me';
+        });
+      }
+    }
+    async function downloadPoster(elementId, filename) {
+      const element = document.getElementById(elementId);
+      const btn = event.target;
+      const originalText = btn.innerText;
+      btn.innerText = '⏳ 正在导出 2x 超清图...';
+      btn.disabled = true;
+
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2.5, // 导出超高清画质 (接近 1200x1600)
+          useCORS: true,
+          backgroundColor: '#13171b'
+        });
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        btn.innerText = '✅ 下载完成！';
+      } catch (err) {
+        console.error(err);
+        btn.innerText = '❌ 导出失败，请刷新重试';
+      } finally {
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }, 2000);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -253,23 +253,177 @@ export const STATIC_UNI_COMMUTE_RULES: Record<string, {
 };
 
 /**
- * 测算从小区的门到门精确通勤用时
+ * 香港本地房源至各大高校典型通勤测算矩阵
+ */
+export const HK_LOCAL_COMMUTE_RULES: Record<string, {
+  name: string;
+  defaultMinutes: number;
+  transitSummary: string;
+  tip: string;
+}> = {
+  HKU: {
+    name: '香港大学 (HKU)',
+    defaultMinutes: 18,
+    transitSummary: '港铁港岛线 (香港大学站) / 城巴薄扶林专线',
+    tip: '港大站A/C出口电梯直通校园本部平台；薄扶林宿舍群可搭乘校巴或小巴22/28路。',
+  },
+  CUHK: {
+    name: '香港中文大学 (CUHK)',
+    defaultMinutes: 15,
+    transitSummary: '港铁东铁线大学站 / 中大校内穿梭校巴',
+    tip: '东铁线大学站直通校园，校门前即为校巴穿梭总站，持中大通免费乘坐校巴各线。',
+  },
+  PolyU: {
+    name: '香港理工大学 (PolyU)',
+    defaultMinutes: 12,
+    transitSummary: '港铁红磡站 (A出口行人天桥直通)',
+    tip: '红磡站A出口全天候有盖行人天桥直达理大平台，即使台风下雨也无需带伞。',
+  },
+  CityU: {
+    name: '香港城市大学 (CityU)',
+    defaultMinutes: 12,
+    transitSummary: '港铁九龙塘站 (C出口又一城直达)',
+    tip: '从九龙塘站穿过又一城商场地下通道即可直达城大康乐楼与学术楼。',
+  },
+  HKBU: {
+    name: '香港浸会大学 (HKBU)',
+    defaultMinutes: 15,
+    transitSummary: '港铁九龙塘站 ➔ 换乘绿色小巴25M / 步行',
+    tip: '九龙塘地铁站D出口步行10分钟或搭乘25M绿色专线小巴直达逸夫校园。',
+  },
+  HKUST: {
+    name: '香港科技大学 (HKUST)',
+    defaultMinutes: 20,
+    transitSummary: '坑口站/彩虹站 ➔ 换乘绿色专线小巴11M/11路',
+    tip: '坑口站搭乘11M小巴或彩虹站搭乘1M小巴直达科大北闸，班次极其密集。',
+  },
+  LingU: {
+    name: '岭南大学 (LingU)',
+    defaultMinutes: 25,
+    transitSummary: '屯马线兆康站 ➔ 步行10分钟或轻铁',
+    tip: '兆康港铁站F出口步行经斜坡通道10分钟即抵岭大校园。',
+  },
+  EdUHK: {
+    name: '香港教育大学 (EdUHK)',
+    defaultMinutes: 25,
+    transitSummary: '大埔墟站 ➔ 换乘九巴74K / 教大校巴',
+    tip: '大埔墟港铁站专设教大专用穿梭校巴站，持学生证刷卡便捷上车。',
+  },
+};
+
+/**
+ * 测算从小区的门到门精确通勤用时（智能识别深圳口岸过关 vs 香港本地通勤）
  */
 export function estimateDoorToDoorCommute(
   communityCommuteToPortMinutes: number = 15,
   nearestPort: string = '福田口岸',
-  targetUni: string = 'HKU'
+  targetUni: string = 'HKU',
+  district: string = '福田区',
+  communityName: string = ''
 ): CommuteEstimate {
+  const isHongKong =
+    district.includes('香港') ||
+    nearestPort.includes('香港') ||
+    communityName.includes('名城') ||
+    communityName.includes('海滨南岸') ||
+    communityName.includes('学生村') ||
+    communityName.includes('PGH') ||
+    communityName.includes('研宿') ||
+    communityName.includes('蔚蓝湾畔') ||
+    communityName.includes('泓都');
+
+  // ================= 1. 香港本地房源通勤计算 =================
+  if (isHongKong) {
+    const hkRule = HK_LOCAL_COMMUTE_RULES[targetUni] || HK_LOCAL_COMMUTE_RULES.HKU;
+    const lowerName = communityName.toLowerCase();
+    
+    let walkToStation = 5;
+    let rideTime = hkRule.defaultMinutes;
+    let customRoute = hkRule.transitSummary;
+
+    // 特殊高频点位定制
+    if (lowerName.includes('学生村') && targetUni === 'HKU') {
+      walkToStation = 3;
+      rideTime = 5;
+      customRoute = '步行/校巴直达港大本部教学楼';
+    } else if ((lowerName.includes('研宿') || lowerName.includes('pgh')) && targetUni === 'CUHK') {
+      walkToStation = 2;
+      rideTime = 4;
+      customRoute = '校内穿梭校巴直通各院系教学楼';
+    } else if (lowerName.includes('名城')) {
+      walkToStation = 4; // 大围站上盖
+      if (targetUni === 'CUHK') {
+        rideTime = 11;
+        customRoute = '东铁线大围站 ➔ 大学站 (直达仅3站)';
+      } else if (targetUni === 'CityU' || targetUni === 'HKBU') {
+        rideTime = 6;
+        customRoute = '东铁线大围站 ➔ 九龙塘站 (仅1站)';
+      } else if (targetUni === 'PolyU') {
+        rideTime = 14;
+        customRoute = '东铁线大围站 ➔ 红磡站 (直达无需换乘)';
+      }
+    } else if (lowerName.includes('海滨南岸')) {
+      if (targetUni === 'PolyU') {
+        walkToStation = 10;
+        rideTime = 0;
+        customRoute = '步行经天桥直达理工大学校园平台 (免乘车)';
+      } else if (targetUni === 'CityU' || targetUni === 'HKBU') {
+        walkToStation = 8;
+        rideTime = 8;
+        customRoute = '东铁线红磡站 ➔ 九龙塘站 (仅2站)';
+      }
+    } else if (lowerName.includes('蔚蓝湾畔') && targetUni === 'HKUST') {
+      walkToStation = 3;
+      rideTime = 10;
+      customRoute = '坑口站总站乘专线小巴11M直达科大北闸';
+    } else if (lowerName.includes('泓都') && targetUni === 'HKU') {
+      walkToStation = 5;
+      rideTime = 4;
+      customRoute = '港铁坚尼地城站 ➔ 香港大学站 (1站直达)';
+    }
+
+    const totalMin = walkToStation + rideTime;
+    const totalMax = totalMin + 6;
+
+    const steps: CommuteStep[] = [
+      {
+        title: '住处 ➔ 港铁站 / 穿梭巴士站',
+        timeText: `~${walkToStation} 分钟`,
+        detail: '步行出小区直达港铁进站口或校巴乘车点',
+      },
+      {
+        title: '公共交通直达',
+        timeText: rideTime > 0 ? `~${rideTime} 分钟` : '免乘车',
+        detail: customRoute,
+      },
+      {
+        title: `抵达 ${hkRule.name.split(' ')[0]} 校园`,
+        timeText: '~3 分钟',
+        detail: '直入教学楼，无需跨境过关与排队',
+      },
+    ];
+
+    return {
+      targetUni,
+      targetUniName: hkRule.name,
+      totalTimeMin: totalMin,
+      totalTimeMax: totalMax,
+      recommendedPort: '香港本地',
+      steps,
+    };
+  }
+
+  // ================= 2. 深圳跨境口岸通勤计算 =================
   const rule = STATIC_UNI_COMMUTE_RULES[targetUni] || STATIC_UNI_COMMUTE_RULES.HKU;
 
-  // 1. 小区到口岸耗时
+  // 小区到口岸耗时
   const toPortTime = communityCommuteToPortMinutes || 15;
 
-  // 2. 口岸过关耗时（平峰8分，高峰15分）
+  // 口岸过关耗时（平峰8分，高峰14分）
   const clearanceMin = 8;
   const clearanceMax = 14;
 
-  // 3. 港铁或跨境大巴耗时
+  // 港铁或跨境大巴耗时
   const hkTime = rule.hkTransitTime;
 
   const totalMin = toPortTime + clearanceMin + hkTime;

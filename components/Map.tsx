@@ -340,7 +340,9 @@ export const MapComponent: React.FC<MapProps> = ({
     return estimateDoorToDoorCommute(
       selectedCommunity.commuteMinutes || 15,
       selectedCommunity.nearestPort || '福田口岸',
-      commuteUni
+      commuteUni,
+      selectedCommunity.district,
+      selectedCommunity.name
     );
   }, [selectedCommunity, commuteUni]);
 
@@ -360,8 +362,29 @@ export const MapComponent: React.FC<MapProps> = ({
         </div>
       )}
 
-      {/* Clean Zoom & Transit Controls (Floating bottom right) */}
-      <div className="absolute bottom-8 right-6 z-20 flex flex-col gap-1.5 pointer-events-auto">
+      {/* Clean Zoom, Roam & Transit Controls (Floating bottom right) */}
+      <div className="absolute bottom-8 right-6 z-20 flex flex-col gap-1.5 pointer-events-auto items-end">
+        {/* Quick Roam View Switch: Shenzhen vs Hong Kong */}
+        <div className="flex bg-white/95 backdrop-blur-md rounded-xl p-1 border border-[#E4E4E0] shadow-md mb-1 gap-1">
+          <button
+            type="button"
+            onClick={() => mapInstanceRef.current?.setZoomAndCenter(12.8, [114.062, 22.523])}
+            className="px-2 py-1 text-[10px] font-semibold rounded-lg hover:bg-[#F2F5F3] text-[#21573B] transition-colors"
+            title="视角移至深圳福田/南山口岸圈"
+          >
+            深圳口岸
+          </button>
+          <div className="w-px h-3.5 bg-[#E4E4E0] self-center" />
+          <button
+            type="button"
+            onClick={() => mapInstanceRef.current?.setZoomAndCenter(12.5, [114.180, 22.340])}
+            className="px-2 py-1 text-[10px] font-semibold rounded-lg hover:bg-[#F2F5F3] text-[#21573B] transition-colors"
+            title="视角移至香港九龙/新界高校圈"
+          >
+            香港核心
+          </button>
+        </div>
+
         {/* Transit Routes Toggle */}
         <button
           onClick={() => setShowTransitRoutes(!showTransitRoutes)}
@@ -406,13 +429,30 @@ export const MapComponent: React.FC<MapProps> = ({
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-semibold text-[#1C1E21] tracking-tight">
-                {selectedCommunity.name}
-              </h3>
-              <p className="text-xs text-[#7B8089] mt-0.5 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-[#9A9EA6]" />
-                {selectedCommunity.address}
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-xl font-semibold text-[#1C1E21] tracking-tight">
+                  {selectedCommunity.name}
+                </h3>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  selectedCommunity.region === 'HK' || selectedCommunity.district?.includes('香港')
+                    ? 'bg-[#EBF1F7] text-[#1D3B5C]'
+                    : 'bg-[#EBF3EE] text-[#21573B]'
+                }`}>
+                  {selectedCommunity.region === 'HK' || selectedCommunity.district?.includes('香港') ? '香港本地' : '深圳跨境'}
+                </span>
+              </div>
+
+              <p className="text-xs text-[#7B8089] mt-1 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-[#9A9EA6] shrink-0" />
+                <span className="truncate">{selectedCommunity.address}</span>
               </p>
+
+              {/* Lease Date Badge */}
+              {selectedCommunity.latestLeaseDate && (
+                <div className="mt-1.5 flex items-center gap-1 text-[11px] text-[#B26A00] bg-[#FFF8EE] border border-[#FFE8C2] px-2 py-0.5 rounded-md w-fit font-medium">
+                  <span>📅 起租时间：{selectedCommunity.latestLeaseDate}</span>
+                </div>
+              )}
             </div>
 
             <button
@@ -441,7 +481,9 @@ export const MapComponent: React.FC<MapProps> = ({
                 <span>~{selectedCommunity.commuteMinutes} {t.minutes}</span>
               </div>
               <span className="text-[10px] text-[#7A7E85] mt-0.5">
-                {t.commuteToPort(selectedCommunity.nearestPort)}
+                {selectedCommunity.region === 'HK' || selectedCommunity.district?.includes('香港')
+                  ? '香港本地免通关'
+                  : t.commuteToPort(selectedCommunity.nearestPort)}
               </span>
             </div>
           </div>

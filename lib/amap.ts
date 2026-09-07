@@ -27,6 +27,8 @@ export async function loadAMapSDK(): Promise<any> {
       plugins: [
         'AMap.Geocoder',
         'AMap.ToolBar',
+        'AMap.AutoComplete',
+        'AMap.PlaceSearch',
       ],
     });
     return AMap;
@@ -51,7 +53,7 @@ export async function loadAMapSDK(): Promise<any> {
 export async function geocodeAddress(address: string, city: string = '深圳市'): Promise<GeocodeResult> {
   // If in browser and AMap is loaded
   if (typeof window !== 'undefined' && (window as any).AMap && (window as any).AMap.Geocoder) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const geocoder = new (window as any).AMap.Geocoder({ city });
       geocoder.getLocation(address, (status: string, result: any) => {
         if (status === 'complete' && result.geocodes && result.geocodes.length > 0) {
@@ -63,7 +65,6 @@ export async function geocodeAddress(address: string, city: string = '深圳市'
             district: first.district,
           });
         } else {
-          // Fallback approximate coords in Shenzhen
           resolve(getFallbackShenzhenCoords(address));
         }
       });
@@ -86,13 +87,138 @@ export async function geocodeAddress(address: string, city: string = '深圳市'
   return getFallbackShenzhenCoords(address);
 }
 
+export interface PlaceSuggestion {
+  name: string;
+  address: string;
+  district: string;
+  lng: number;
+  lat: number;
+}
+
 /**
- * Approximate Shenzhen coordinates by landmark keywords if network geocode fails
+ * 实时从高德 POI / 自动补全接口搜索地点推荐（类似外卖搜索）
+ */
+export async function searchPlaceSuggestions(keyword: string, city: string = '深圳'): Promise<PlaceSuggestion[]> {
+  if (!keyword || !keyword.trim()) return [];
+
+  // 1. Try AMap client-side AutoComplete
+  if (typeof window !== 'undefined') {
+    try {
+      const AMap = (window as any).AMap || (await loadAMapSDK());
+      if (AMap && AMap.AutoComplete) {
+        return new Promise((resolve) => {
+          const auto = new AMap.AutoComplete({ city });
+          auto.search(keyword, (status: string, result: any) => {
+            if (status === 'complete' && result && result.tips) {
+              const items: PlaceSuggestion[] = result.tips
+                .filter((tip: any) => tip.location && tip.name)
+                .map((tip: any) => ({
+                  name: tip.name,
+                  address: tip.address || tip.district || tip.name,
+                  district: tip.district || '',
+                  lng: Number(tip.location.lng),
+                  lat: Number(tip.location.lat),
+                }));
+              if (items.length > 0) {
+                return resolve(items.slice(0, 7));
+              }
+            }
+            resolve(getLocalFilteredPresets(keyword));
+          });
+        });
+      }
+    } catch (e) {
+      console.warn('AMap AutoComplete query failed:', e);
+    }
+  }
+
+  return getLocalFilteredPresets(keyword);
+}
+
+/**
+ * 逆地理编码：根据经纬度反查标准地址（外卖拖拽定位大头针核心）
+ */
+export async function reverseGeocodeCoords(lng: number, lat: number): Promise<{ address: string; district: string }> {
+  if (typeof window !== 'undefined') {
+    try {
+      const AMap = (window as any).AMap || (await loadAMapSDK());
+      if (AMap && AMap.Geocoder) {
+        return new Promise((resolve) => {
+          const geocoder = new AMap.Geocoder();
+          geocoder.getAddress([lng, lat], (status: string, result: any) => {
+            if (status === 'complete' && result && result.regeocode) {
+              resolve({
+                address: result.regeocode.formattedAddress || '已选定位点',
+                district: result.regeocode.addressComponent?.district || '',
+              });
+            } else {
+              resolve({ address: `定位点 (${lng.toFixed(4)}, ${lat.toFixed(4)})`, district: '' });
+            }
+          });
+        });
+      }
+    } catch (e) {
+      console.warn('Reverse geocoding failed:', e);
+    }
+  }
+  return { address: `定位坐标 [${lng.toFixed(4)}, ${lat.toFixed(4)}]`, district: '' };
+}
+
+import { PRESET_POPULAR_COMMUNITIES } from './mapFeatures';
+
+function getLocalFilteredPresets(keyword: string): PlaceSuggestion[] {
+  const kw = keyword.toLowerCase().trim();
+  return PRESET_POPULAR_COMMUNITIES
+    .filter((p) => p.name.toLowerCase().includes(kw) || p.address.toLowerCase().includes(kw) || p.district.toLowerCase().includes(kw))
+    .map((p) => ({
+      name: p.name,
+      address: p.address,
+      district: p.district,
+      lng: p.lng,
+      lat: p.lat,
+    }));
+}
+
+/**
+ * 权威精准的地标与小区 Fallback 匹配
  */
 function getFallbackShenzhenCoords(address: string): GeocodeResult {
   const lower = address.toLowerCase();
 
-  // Nanshan / Shenzhen Bay / Shekou / Houhai / High-Tech Park
+  // 1. 金地名津（福田口岸正对面，重点纠错）
+  if (lower.includes('金地名津') || (lower.includes('金地') && lower.includes('名津'))) {
+    return { lng: 114.0664, lat: 22.5195, district: '福田区', formattedAddress: '深圳市福田区港田路金地名津' };
+  }
+
+  // 2. 置地广场 (罗湖区春风路) vs 置地逸轩 (福田区福民)
+  if (lower.includes('置地广场') || (lower.includes('置地') && (lower.includes('罗湖') || lower.includes('春风')))) {
+    return { lng: 114.1235, lat: 22.5368, district: '罗湖区', formattedAddress: '深圳市罗湖区春风路3068号置地广场' };
+  }
+  if (lower.includes('置地逸轩') || lower.includes('置地')) {
+    return { lng: 114.0612, lat: 22.5245, district: '福田区', formattedAddress: '深圳市福田区金田路3028号置地逸轩' };
+  }
+
+  // 3. 香港热点房源
+  if (lower.includes('名城') || lower.includes('festival city')) {
+    return { lng: 114.1785, lat: 22.3732, district: '香港·沙田区', formattedAddress: '香港新界沙田大围美田路1号大围名城' };
+  }
+  if (lower.includes('海滨南岸') || lower.includes('harbour place')) {
+    return { lng: 114.1882, lat: 22.3025, district: '香港·九龙城区', formattedAddress: '香港九龙红磡爱景街8号海滨南岸' };
+  }
+  if (lower.includes('学生村') || lower.includes('薄扶林')) {
+    return { lng: 114.1352, lat: 22.2828, district: '香港·中西区', formattedAddress: '香港薄扶林道93号香港大学赛马会第一学生村' };
+  }
+  if (lower.includes('蔚蓝湾畔') || lower.includes('坑口')) {
+    return { lng: 114.2642, lat: 22.3168, district: '香港·西贡区', formattedAddress: '香港新界将军澳培成路15号蔚蓝湾畔' };
+  }
+  if (lower.includes('泓都') || lower.includes('坚尼地城')) {
+    return { lng: 114.1278, lat: 22.2845, district: '香港·中西区', formattedAddress: '香港港岛坚尼地城新海旁38号泓都' };
+  }
+  if (lower.includes('pgh') || lower.includes('研宿') || lower.includes('中文大学')) {
+    return { lng: 114.2052, lat: 22.4195, district: '香港·沙田区', formattedAddress: '香港新界沙田马料水香港中文大学研究生宿舍' };
+  }
+
+  // 4. 南山 / 后海 / 科技园
   if (lower.includes('后海') || lower.includes('深圳湾') || lower.includes('海岸城') || lower.includes('漾日湾')) {
     return { lng: 113.939882, lat: 22.517521, district: '南山区' };
   }
@@ -103,7 +229,7 @@ function getFallbackShenzhenCoords(address: string): GeocodeResult {
     return { lng: 113.918932, lat: 22.498912, district: '南山区' };
   }
 
-  // Futian - Lianhuabei / Jingdian / Meilin / Gangxia / CBD
+  // 5. 福田各片区
   if (lower.includes('莲花北') || lower.includes('青莲') || lower.includes('莲花山') || lower.includes('彩田')) {
     return { lng: 114.058312, lat: 22.562145, district: '福田区' };
   }
@@ -119,24 +245,24 @@ function getFallbackShenzhenCoords(address: string): GeocodeResult {
   if (lower.includes('皇岗') || lower.includes('皇御苑') || lower.includes('福田南')) {
     return { lng: 114.086432, lat: 22.527319, district: '福田区' };
   }
-  if (lower.includes('金地') || lower.includes('沙尾') || lower.includes('沙头') || lower.includes('红树林')) {
+  if (lower.includes('沙尾') || lower.includes('沙头') || lower.includes('红树林')) {
     return { lng: 114.041832, lat: 22.518641, district: '福田区' };
   }
-  if (lower.includes('水围') || lower.includes('福民') || lower.includes('福田口岸') || lower.includes('落马洲')) {
+  if (lower.includes('水围') || lower.includes('福民') || lower.includes('福田口岸') || lower.includes('落马洲') || lower.includes('海悦')) {
     return { lng: 114.062125, lat: 22.522814, district: '福田区' };
   }
 
-  // Luohu
+  // 6. 罗湖
   if (lower.includes('罗湖') || lower.includes('春风路') || lower.includes('东门') || lower.includes('国贸') || lower.includes('文锦渡')) {
     return { lng: 114.118932, lat: 22.536412, district: '罗湖区' };
   }
 
-  // Longhua / Shenzhen North Station
+  // 7. 龙华 / 深圳北站
   if (lower.includes('龙华') || lower.includes('民治') || lower.includes('红山') || lower.includes('深圳北')) {
     return { lng: 114.024512, lat: 22.614214, district: '龙华区' };
   }
 
-  // Default Futian Port area
+  // 默认福田口岸核心区
   return { lng: 114.062125 + (Math.random() - 0.5) * 0.02, lat: 22.522814 + (Math.random() - 0.5) * 0.02, district: '福田区' };
 }
 

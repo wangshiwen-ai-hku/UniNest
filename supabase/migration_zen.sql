@@ -60,3 +60,7 @@ $$;
 
 -- 赋权给匿名用户执行该计数函数
 GRANT EXECUTE ON FUNCTION public.increment_analytic_counter(text) TO anon;
+
+-- 6. 扩展起租时间字段 (支持年份/月份收集)
+ALTER TABLE public.student_submissions 
+  ADD COLUMN IF NOT EXISTS lease_start_date text;
